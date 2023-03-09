@@ -5,3 +5,5 @@ Learning typescript, and tired of fighting to merge pdf docs without paying mone
 Intended to be run through CLI and will not likely have any front end.
 
 fork repo, run npm i to install all dependencies, then run 'ts-node index.ts' 
+
+If this line is still here, this app remaind broken.
