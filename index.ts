@@ -12,7 +12,7 @@ let merger: PDFMerger = new PDFMerger();
 const makePDFList: Function = async (directory: fs.PathLike) => {
   try {
     const fileArr: Object = await readdir(directory);
-    mergePDFs(fileArr);
+    await mergePDFs(fileArr);
   } catch (err) {
     console.error(err);
   }
@@ -20,13 +20,10 @@ const makePDFList: Function = async (directory: fs.PathLike) => {
 
 const mergePDFs: Function = async (input: [Object]) => {
   try {
-    input.forEach(async (element: string) => {
-      await merger.add(element);
-    });
-    await merger.save("merged.pdf");
-    // Export the merged PDF as a nodejs Buffer
-    // const mergedPdfBuffer = await merger.saveAsBuffer();
-    // fs.writeSync('merged.pdf', mergedPdfBuffer);
+    for (const file of input) {
+      await merger.add(`${pdfDir}/${file}`);
+    }     
+    await merger.save(`${pdfDir}/merged.pdf`);
   } catch (err) {
     console.error(err);
   }
