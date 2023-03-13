@@ -59,11 +59,12 @@ const fileQuestions: Function = (input: Object[]) => {
       choices: ["Yes", "No"],
     },
   ];
-  return inquirer.prompt(filePrompts).then((response) => {
+  return inquirer.prompt(filePrompts).then(async (response) => {
     if (response.addMore == "No") {
-      console.log(fileMerger);
+      await merger.add(`${pdfDir}/${response.fileSelect}`)
+      await merger.save(`${pdfDir}/merged.pdf`)
     } else {
-      fileMerger.push(response);
+      await merger.add(`${pdfDir}/${response.fileSelect}`)
       return fileQuestions(input)
     }
   });
