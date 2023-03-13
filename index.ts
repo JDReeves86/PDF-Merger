@@ -5,10 +5,13 @@ import util = require("util");
 require("dotenv").config();
 import inquirer from "inquirer";
 import PDFMerger = require("pdf-merger-js");
+import Choice = require("inquirer/lib/objects/choice");
 
 let pdfDir: String = process.env.PDF_HOME;
 const readdir = util.promisify(fs.readdir);
 let merger: PDFMerger = new PDFMerger();
+
+let fileMerger: Object[] = [];
 
 const directoryPrompts: [Object] = [
   {
@@ -27,16 +30,43 @@ const directoryQuestions: Function = () => {
       return fileList;
     })
     .then((data) => {
-      return inquirer.prompt({
-        type: "list",
-        name: "fileSelect",
-        message: "Which file do you wish to add?",
-        choices: data,
-      });
+      return fileQuestions(data);
     })
     .then((data) => {
       console.log(data);
     });
+};
+
+const fileQuestions: Function = (input: Object[]) => {
+  const filePrompts: Object[] = [
+    {
+      type: "list",
+      name: "fileSelect",
+      message: "Which file do you wish to add?",
+      choices: input,
+    },
+    {
+      type: "list",
+      name: "pages",
+      message:
+        "Do you want to merge the whole document, a specific page, or a range of pages?",
+      choices: ["Whole document", "Single page", "Page range"],
+    },
+    {
+      type: "list",
+      name: "addMore",
+      message: "Do you want to add more documents to the merge?",
+      choices: ["Yes", "No"],
+    },
+  ];
+  return inquirer.prompt(filePrompts).then((response) => {
+    if (response.addMore == "No") {
+      console.log(fileMerger);
+    } else {
+      fileMerger.push(response);
+      return fileQuestions(input)
+    }
+  });
 };
 
 const init: Function = () => {
@@ -63,4 +93,4 @@ const mergePDFs: Function = async (input: [Object]) => {
   }
 };
 
-init()
+init();
