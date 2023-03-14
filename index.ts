@@ -32,9 +32,6 @@ const directoryQuestions: Function = () => {
     .then((data) => {
       return fileQuestions(data);
     })
-    .then((data) => {
-      console.log(data);
-    });
 };
 
 const fileQuestions: Function = (input: Object[]) => {
@@ -53,18 +50,66 @@ const fileQuestions: Function = (input: Object[]) => {
       choices: ["Whole document", "Single page", "Page range"],
     },
     {
+      type: 'input',
+      name: 'singlePage',
+      message: 'Which page do you wish to add?',
+      when(response: { pages: string }) {
+        return response.pages === 'Single page'
+      },
+    },
+    {
+      type: 'input',
+      name: 'startPageRange',
+      message: 'Which page do you wish to start the add?',
+      when(response: { pages: string }) {
+        return response.pages === 'Page range'
+      },
+    },
+    {
+      type: 'input',
+      name: 'endPageRange',
+      message: 'Which page do you wish to stop the add?',
+      when(response: { pages: string }) {
+        return response.pages === 'Page range'
+      },
+    },
+    {
       type: "list",
       name: "addMore",
       message: "Do you want to add more documents to the merge?",
       choices: ["Yes", "No"],
     },
+    {
+      type: 'input',
+      name: 'output',
+      message: 'What do you want the name of the merged file to be?',
+      when (response: {addMore: string }) {
+        return response.addMore === 'No'
+      }
+    },
   ];
   return inquirer.prompt(filePrompts).then(async (response) => {
+    switch (response.pages) {
+      case 'Single page':
+        await merger.add(`${pdfDir}/${response.fileSelect}`, response.singlePage)
+        break
+      case 'Page range':
+        await merger.add(`${pdfDir}/${response.fileSelect}`, `${response.startPageRange} to ${response.endPageRange}`)
+        break
+      default:
+        await merger.add(`${pdfDir}/${response.fileSelect}`)
+        break
+    }
+    // if (response.pages === 'Single page') {
+    //   await merger.add(`${pdfDir}/${response.fileSelect}`, response.singlePage)
+    // }
+    // if (response.pages === 'Page range') {
+    //   await merger.add(`${pdfDir}/${response.fileSelect}`, `${response.startPageRange} to ${response.endPageRange}`)
+    // }
     if (response.addMore == "No") {
-      await merger.add(`${pdfDir}/${response.fileSelect}`)
-      await merger.save(`${pdfDir}/merged.pdf`)
+      // await merger.add(`${pdfDir}/${response.fileSelect}`)
+      await merger.save(`${pdfDir}/${response.output}.pdf`)
     } else {
-      await merger.add(`${pdfDir}/${response.fileSelect}`)
       return fileQuestions(input)
     }
   });
