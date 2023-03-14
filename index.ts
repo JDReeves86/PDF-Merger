@@ -21,15 +21,13 @@ const directoryPrompts: [Object] = [
 
 const directoryQuestions: Function = async () => {
   try {
-    interface Response {
-      sourceDir: string
-    }
-    const response: {sourceDir: string} = await inquirer.prompt(directoryPrompts)
-    const sorted: Object[] = await makePDFList(response.sourceDir)
-    return fileQuestions(sorted)
-  }
-  catch (error) {
-    console.log(error)
+    const response: { sourceDir: string } = await inquirer.prompt(
+      directoryPrompts
+    );
+    const sorted: Object[] = await makePDFList(response.sourceDir);
+    return fileQuestions(sorted);
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -116,10 +114,6 @@ const fileQuestions: Function = async (input: Object[]) => {
   }
 };
 
-const init: Function = () => {
-  return directoryQuestions();
-};
-
 const makePDFList: Function = async (directory: fs.PathLike) => {
   try {
     const fileArr: Object = await readdir(directory);
@@ -129,4 +123,4 @@ const makePDFList: Function = async (directory: fs.PathLike) => {
   }
 };
 
-init();
+directoryQuestions();
