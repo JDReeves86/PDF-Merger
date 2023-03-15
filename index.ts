@@ -10,6 +10,21 @@ let pdfDir: String = process.env.PDF_HOME;
 const readdir = util.promisify(fs.readdir);
 let merger: PDFMerger = new PDFMerger();
 
+const welcome: string = `
+                                                                                                                            
+,--.   ,--.       ,--.                                    ,--.                                                              
+|  |   |  | ,---. |  | ,---. ,---. ,--,--,--. ,---.     ,-'  '-. ,---.                                                      
+|  |.'.|  || .-. :|  || .--'| .-. ||        || .-. :    '-.  .-'| .-. |                                                     
+|   ,'.   |\\   --.|  |\\ \`--.' '-' '|  |  |  |\\   --.      |  |  ' '-' '                                                     
+'--'   '--' \`----'\`--' \`---' \`---' \`--\`--\`--' \`----'      \`--'   \`---'                                                      
+ ,-----.,--.                               ,------. ,------.  ,------.       ,--.   ,--.                                    
+'  .--./|  ,---.  ,---.  ,--,--. ,---.     |  .--. '|  .-.  \\ |  .---',-----.|   \`.'   | ,---. ,--.--. ,---.  ,---. ,--.--. 
+|  |    |  .-.  || .-. :' ,-.  || .-. |    |  '--' ||  |  \\  :|  \`--, '-----'|  |'.'|  || .-. :|  .--'| .-. || .-. :|  .--' 
+'  '--'\\|  | |  |\\   --.\\ '-'  || '-' '    |  | --' |  '--'  /|  |\`          |  |   |  |\\   --.|  |   ' '-' '\\   --.|  |    
+ \`-----'\`--' \`--' \`----' \`--\`--'|  |-'     \`--'     \`-------' \`--'           \`--'   \`--' \`----'\`--'   .\`-  /  \`----'\`--'    
+                                \`--' 
+`
+
 const directoryPrompts: [Object] = [
   {
     type: "input",
@@ -21,6 +36,7 @@ const directoryPrompts: [Object] = [
 
 const directoryQuestions: Function = async () => {
   try {
+    console.log(welcome)
     const response: { sourceDir: string } = await inquirer.prompt(
       directoryPrompts
     );
@@ -106,6 +122,7 @@ const fileQuestions: Function = async (input: Object[]) => {
     }
     if (response.addMore == "No") {
       await merger.save(`${pdfDir}/${response.output}.pdf`);
+      console.log('Document succesfully merged!')
     } else {
       return fileQuestions(input);
     }
